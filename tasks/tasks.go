@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"fmt"
 	"time"
 	"to-do/logs"
 )
@@ -33,5 +34,24 @@ func NewTask(title string, options Options) {
 		targetDate:   options.TargetDate,
 	}
 	Pool = append(Pool, newTask)
-	logs.NewLog(logs.Counter, "Пользователь добавил задачу с названием "+newTask.title)
+	logs.NewLog(logs.Counter, "Пользователь добавил задачу:")
+
+	logTask := "Название: " + title + "\n"
+	if newTask.description != "" {
+		logTask += "Описание: " + newTask.description + "\n"
+	}
+	if newTask.category != "" {
+		logTask += "Категория: " + newTask.category + "\n"
+	}
+
+	logTask += "Время создания: " + newTask.creationDate.Format("2006.01.02 15:04") + "\n"
+
+	if !newTask.targetDate.IsZero() {
+		logTask += "Дедлайн: " + newTask.targetDate.Format("2006.01.02 15:04") + "\n"
+	}
+	logs.NewLog(0, logTask)
+
+	fmt.Println("Задача добавлена:")
+	PrintTask(0, newTask)
+
 }
