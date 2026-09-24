@@ -52,11 +52,13 @@ func main() {
 				tasks.HandleAdd(Text)
 			case "list":
 				tasks.HandleList(Text)
-
 			case "del":
-				logs.NewLog(logs.Counter, "Пользователь удалил задачу")
+				tasks.HandleDel(Text)
 			case "done":
 				tasks.HandleDone(Text)
+			case "undone":
+				tasks.HandleUndone(Text)
+
 			case "change":
 
 			// WRONG

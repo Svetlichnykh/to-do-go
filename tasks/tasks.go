@@ -2,8 +2,10 @@ package tasks
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 	"to-do/logs"
+	"to-do/timeCalc"
 )
 
 type Task struct {
@@ -52,6 +54,41 @@ func NewTask(title string, options Options) {
 	logs.NewLog(0, logTask)
 
 	fmt.Println("Задача добавлена:")
-	PrintTask(0, newTask)
+	PrintTask(-1, newTask)
 
+}
+
+func PrintTask(i int, v Task) {
+	if i != -1 {
+		fmt.Print(strconv.Itoa(i+1) + ". ")
+	}
+
+	if v.category != "" {
+		fmt.Print("(", v.category, ") ")
+	}
+	fmt.Print(v.title)
+	var check string
+	if v.done {
+		check = " [ ✅ ]"
+	} else {
+		check = " [ ❌ ]"
+	}
+	fmt.Println(check)
+
+	if v.description != "" {
+		fmt.Println(v.description)
+	}
+
+	fmt.Println("📅 Дата создания:", v.creationDate.Format("2006.01.02 15:04"))
+	if !v.targetDate.IsZero() {
+		fmt.Print("❗ Дедлайн: ", v.targetDate.Format("2006.01.02 15:04"))
+		if !v.done {
+			fmt.Print(" ( " + timeCalc.TimeUntil(v.targetDate) + " )")
+		}
+		fmt.Println("")
+	}
+	if !v.doneDate.IsZero() {
+		fmt.Println("✅ Время выполнения:", v.doneDate.Format("2006.01.02 15:04"))
+	}
+	fmt.Println("")
 }

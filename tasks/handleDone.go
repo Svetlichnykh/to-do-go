@@ -22,6 +22,12 @@ func HandleDone(text []string) {
 		v := &Pool[i]
 		if strings.ToLower(v.title) == strings.ToLower(title) {
 			existFlag = true
+			if v.done == true {
+				fmt.Println("Данная задача уже отмечена как выполненная - " + title)
+				logText = "Пользователь попытался отметить выполненную задачу выполненной - " + title
+				logs.NewLog(logs.Counter, logText)
+				return
+			}
 			v.doneDate = time.Now()
 			v.done = true
 			logText = "Пользователь отметил следующую задачу как выполненную - " + title

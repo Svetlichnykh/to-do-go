@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 	"to-do/logs"
-	"to-do/timeCalc"
 )
 
 func HandleList(text []string) {
@@ -35,7 +34,7 @@ func HandleList(text []string) {
 				fmt.Println("ЗАДАЧИ В ЭТОЙ КАТЕГОРИИ НЕ НАЙДЕНЫ")
 				return
 			} else {
-				logText := "Пользователь вывел список задач по категории, но их не оказалось - " + cat
+				logText := "Пользователь вывел список задач по категории - " + cat + " Количество задач - " + strconv.Itoa(counter)
 				logs.NewLog(logs.Counter, logText)
 				fmt.Println("Всего задач:", strconv.Itoa(counter))
 			}
@@ -72,33 +71,4 @@ func HandleList(text []string) {
 			PrintTask(i, v)
 		}
 	}
-}
-
-func PrintTask(i int, v Task) {
-	fmt.Print(strconv.Itoa(i+1) + ". ")
-	if v.category != "" {
-		fmt.Print("(", v.category, ") ")
-	}
-	fmt.Print("Задача - ", v.title)
-	var check string
-	if v.done {
-		check = " [ ✅ ]"
-	} else {
-		check = " [ ❌ ]"
-	}
-	fmt.Println(check)
-
-	if v.description != "" {
-		fmt.Println(v.description)
-	}
-
-	fmt.Println("📅 Дата создания:", v.creationDate.Format("2006.01.02 15:04"))
-	if !v.targetDate.IsZero() {
-		fmt.Print("❗ Дедлайн:", v.targetDate.Format("2006.01.02 15:04"))
-		fmt.Println(" Осталось времени: " + timeCalc.TimeUntil(v.targetDate))
-	}
-	if !v.doneDate.IsZero() {
-		fmt.Println("✅ Время выполнения:", v.doneDate.Format("2006.01.02 15:04"))
-	}
-	fmt.Println("")
 }
