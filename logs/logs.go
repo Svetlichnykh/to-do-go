@@ -5,5 +5,9 @@ import "strconv"
 var Logs []string
 
 func NewLog(counter int, text string) {
-	Logs = append(Logs, strconv.Itoa(counter)+". "+text)
+	if counter != 0 {
+		Logs = append(Logs, strconv.Itoa(counter)+". "+text)
+	} else {
+		Logs = append(Logs, text)
+	}
 }

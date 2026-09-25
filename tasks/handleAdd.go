@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -13,6 +14,7 @@ func HandleAdd(text []string) {
 	var description string
 	var category string
 	var targetDate string
+	var errInput error
 
 	flag := "title"
 
@@ -20,11 +22,23 @@ func HandleAdd(text []string) {
 		if i != 0 {
 			switch v {
 			case "-d":
-				flag = "description"
+				if description != "" {
+					errInput = errors.Join(errInput, errors.New("флаг -d был введен более 1 раза"))
+				} else {
+					flag = "description"
+				}
 			case "-c":
-				flag = "category"
+				if category != "" {
+					errInput = errors.Join(errInput, errors.New("флаг -c был введен более 1 раза"))
+				} else {
+					flag = "category"
+				}
 			case "-t":
-				flag = "targetDate"
+				if targetDate != "" {
+					errInput = errors.Join(errInput, errors.New("флаг -t был введен более 1 раза"))
+				} else {
+					flag = "targetDate"
+				}
 			default:
 				switch flag {
 				case "title":
@@ -40,18 +54,24 @@ func HandleAdd(text []string) {
 		}
 	}
 
+	if errInput != nil {
+		fmt.Println(errInput)
+		return
+	}
+
 	var tDateTime time.Time
 	var err error
 
 	if targetDate != "" {
 		tDateTime, err = time.Parse(
-			"15:04 02.01.2006",
+			"2006.01.02 15:04",
 			strings.TrimSpace(targetDate),
 		)
 	}
 
 	if err != nil {
-		fmt.Println(err)
+		logs.NewLog(logs.Counter, "Пользователь допустил ошибку при вводе времени дедлайна во время создания новой задачи")
+		fmt.Println("Дата введена неверно, формат - 2006.01.02 15:04")
 		return
 	}
 
@@ -60,12 +80,21 @@ func HandleAdd(text []string) {
 		Category:    strings.TrimSpace(category),
 		TargetDate:  tDateTime,
 	}
+	title = strings.TrimSpace(title)
+
+	for _, v := range Pool {
+		if strings.ToLower(v.title) == strings.ToLower(title) {
+			logs.NewLog(logs.Counter, "Пользователь попытался создать уже существующую задачу")
+			fmt.Println("Задача с таким названием уже существует! Введите другое")
+			return
+		}
+	}
 
 	if title == "" {
 		logs.NewLog(logs.Counter, "Пользователь попытался создать задачу без названия")
 		fmt.Println("Вы не ввели название! Введите help для вывода списка доступных команд")
 		return
 	} else {
-		NewTask(strings.TrimSpace(title), options)
+		NewTask(title, options)
 	}
 }

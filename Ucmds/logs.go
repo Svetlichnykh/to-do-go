@@ -13,7 +13,6 @@ func ShowLogs(text []string) {
 		logs.NewLog(logs.Counter, "Пользователь посмотрел логи программы")
 		fmt.Println("Ваша команда - logs")
 		fmt.Println("======== Логи программы ========")
-		fmt.Println("")
 		for _, v := range logs.Logs {
 			fmt.Println(v)
 		}
