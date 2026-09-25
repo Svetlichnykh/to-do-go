@@ -69,6 +69,5 @@ func HandleAdd(text []string) {
 		return
 	} else {
 		NewTask(strings.TrimSpace(title), options)
-		pp.Println(strings.TrimSpace(title), options)
 	}
 }
