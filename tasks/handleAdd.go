@@ -58,21 +58,15 @@ func HandleAdd(text []string) {
 		fmt.Println(errInput)
 		return
 	}
-
 	var tDateTime time.Time
-	var err error
-
 	if targetDate != "" {
-		tDateTime, err = time.Parse(
-			"2006.01.02 15:04",
-			strings.TrimSpace(targetDate),
-		)
-	}
-
-	if err != nil {
-		logs.NewLog(logs.Counter, "Пользователь допустил ошибку при вводе времени дедлайна во время создания новой задачи")
-		fmt.Println("Дата введена неверно, формат - 2006.01.02 15:04")
-		return
+		tDateTime = TimeTranslate(targetDate)
+		if tDateTime.IsZero() {
+			logText := "Пользователь допустил ошибку при вводе времени дедлайна во время создания новой задачи - " + title
+			logs.NewLog(logs.Counter, logText)
+			fmt.Println("Дата введена неверно, формат - 2006.01.02 15:04")
+			return
+		}
 	}
 
 	options := Options{

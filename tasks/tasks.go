@@ -2,7 +2,9 @@ package tasks
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
+	"strings"
 	"time"
 	"to-do/logs"
 	"to-do/timeCalc"
@@ -91,4 +93,20 @@ func PrintTask(i int, v Task) {
 		fmt.Println("✅ Время выполнения:", v.doneDate.Format("2006.01.02 15:04"))
 	}
 	fmt.Println("")
+}
+
+func EditTask(newTask Task, title string) {
+	for i, _ := range Pool {
+		v := &Pool[i]
+		existFlag := false
+		var logText string
+		if strings.ToLower(v.title) == strings.ToLower(title) {
+			existFlag = true
+			Pool = slices.Delete(Pool, i, i+1)
+			logText = "Пользователь удалил задачу - " + title
+		}
+		if existFlag {
+		}
+		logs.NewLog(logs.Counter, logText)
+	}
 }

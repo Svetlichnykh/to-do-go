@@ -58,8 +58,8 @@ func main() {
 				tasks.HandleDone(Text)
 			case "undone":
 				tasks.HandleUndone(Text)
-
 			case "change":
+				tasks.HandleChange(Text)
 
 			// WRONG
 			default:
