@@ -5,8 +5,6 @@ import (
 	"strings"
 	"time"
 	"to-do/logs"
-
-	"github.com/k0kubun/pp"
 )
 
 func HandleAdd(text []string) {
