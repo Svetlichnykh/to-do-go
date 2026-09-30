@@ -122,9 +122,9 @@ func HandleChange(text []string) {
 	}
 
 	newOptions := Task{
-		title:        newTitle,
-		description:  newDescription,
-		category:     newCategory,
+		title:        strings.TrimSpace(newTitle),
+		description:  strings.TrimSpace(newDescription),
+		category:     strings.TrimSpace(newCategory),
 		done:         false,
 		creationDate: ncDateTime,
 		targetDate:   ntDateTime,
@@ -144,7 +144,7 @@ func HandleChange(text []string) {
 		fmt.Println("Вы не ввели название! Введите help для вывода списка доступных команд")
 		return
 	} else {
-		EditTask(newOptions, title)
+		EditTask(newOptions, strings.TrimSpace(title))
 	}
 }
 

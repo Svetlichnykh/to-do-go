@@ -60,7 +60,6 @@ func main() {
 				tasks.HandleUndone(Text)
 			case "change":
 				tasks.HandleChange(Text)
-
 			// WRONG
 			default:
 				Ucmds.WrongInput(Text)
