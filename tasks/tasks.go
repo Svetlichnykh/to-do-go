@@ -91,16 +91,16 @@ func PrintTask(i int, v Task) {
 	if !v.doneDate.IsZero() {
 		fmt.Println("✅ Время выполнения:", v.doneDate.Format("2006.01.02 15:04"))
 	}
-	fmt.Println("")
 }
 
 func EditTask(newTask Task, title string) {
+	existFlag := false
+	var logText string
+	var changesExist bool
+	var changes string
+	var changedTaskId int
 	for i := range Pool {
 		v := &Pool[i]
-		existFlag := false
-		var logText string
-		var changes string
-		var changesExist bool
 		if strings.ToLower(v.title) == strings.ToLower(title) {
 			existFlag = true
 			if newTask.title != "" {
@@ -132,9 +132,9 @@ func EditTask(newTask Task, title string) {
 				changesExist = true
 			}
 			if !newTask.creationDate.IsZero() {
-				if newTask.creationDate.After(v.targetDate) {
+				if !v.targetDate.IsZero() && newTask.creationDate.After(v.targetDate) {
 					fmt.Println("Время создания не валидно, оно не может быть после дедлайна. Дата создания изменена не будет")
-				} else if newTask.creationDate.After(v.doneDate) {
+				} else if !v.doneDate.IsZero() && newTask.creationDate.After(v.doneDate) {
 					fmt.Println("Время создания не валидно, оно не может быть после даты выполнения. Дата создания изменена не будет")
 				} else {
 					changes += "Дата создания: " + v.creationDate.Format("2006.01.02 15:04") + " --> " + newTask.creationDate.Format("2006.01.02 15:04") + "\n"
@@ -145,7 +145,7 @@ func EditTask(newTask Task, title string) {
 
 			}
 			if !newTask.targetDate.IsZero() {
-				if newTask.targetDate.Before(v.creationDate) {
+				if !v.creationDate.IsZero() && newTask.targetDate.Before(v.creationDate) {
 					fmt.Println("Время дедлайна не валидно, оно не может быть до даты создания. Дата дедлайна изменена не будет")
 				} else {
 					if !v.targetDate.IsZero() {
@@ -160,7 +160,7 @@ func EditTask(newTask Task, title string) {
 				}
 			}
 			if !newTask.doneDate.IsZero() {
-				if newTask.doneDate.Before(v.creationDate) {
+				if !v.creationDate.IsZero() && newTask.doneDate.Before(v.creationDate) {
 					fmt.Println("Время выполнения не валидно, оно не может быть до даты создания. Дата выполнения изменена не будет")
 				} else {
 					if !v.doneDate.IsZero() {
@@ -176,25 +176,27 @@ func EditTask(newTask Task, title string) {
 					changesExist = true
 				}
 			}
-
-			if !changesExist {
-				fmt.Println("Ничего не изменено, причины написаны выше")
-				logText += "Пользователь совершил ошибки при заполнении дат и ничего не изменил в задаче - " + title
-			} else {
-				logText = "Пользователь изменил задачу - " + title + "\n" + "Изменения:" + "\n" + logText + "\n"
-				fmt.Println("Вы успешно изменили задачу - " + title)
-				fmt.Println("Изменения:")
-				fmt.Println(changes)
-				fmt.Println("Измененная задача:")
-				PrintTask(-1, Pool[i])
-			}
+			changedTaskId = i
 		}
-		if !existFlag {
-			fmt.Println("Не найдено задачи с названием", title)
-			logText = "Пользователь попытался изменить несуществующую задачу - " + title
-			logs.NewLog(logs.Counter, logText)
-			return
-		}
-		logs.NewLog(logs.Counter, logText)
 	}
+
+	if !changesExist {
+		fmt.Println("Ничего не изменено, причины написаны выше")
+		logText += "Пользователь совершил ошибки при заполнении дат и ничего не изменил в задаче - " + title
+	} else {
+		logText = "Пользователь изменил задачу - " + title + "\n" + "Изменения:" + "\n" + logText + "\n"
+		fmt.Println("Вы успешно изменили задачу - " + title)
+		fmt.Println("Изменения:")
+		fmt.Println(changes)
+		fmt.Println("Измененная задача:")
+		PrintTask(-1, Pool[changedTaskId])
+	}
+
+	if !existFlag {
+		fmt.Println("Не найдено задачи с названием", title)
+		logText = "Пользователь попытался изменить несуществующую задачу - " + title
+		logs.NewLog(logs.Counter, logText)
+		return
+	}
+	logs.NewLog(logs.Counter, logText)
 }

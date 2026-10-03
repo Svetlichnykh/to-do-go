@@ -11,7 +11,7 @@ func TimeUntil(target time.Time) string {
 	target = target.UTC()
 
 	if !target.After(now) {
-		return "0 секунд"
+		return "Дедлайн прошел"
 	}
 	total := target.Sub(now)
 
