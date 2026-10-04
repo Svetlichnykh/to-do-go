@@ -34,6 +34,7 @@ func main() {
 
 		if len(text) == 0 {
 			logs.NewLog(logs.Counter, "Пользователь ввел пустую строку")
+			logs.CounterInc()
 			cmds.EmptyInput()
 			continue
 		}

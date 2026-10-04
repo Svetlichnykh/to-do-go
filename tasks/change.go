@@ -92,7 +92,7 @@ func HandleChange(text []string) {
 
 	var ntDateTime time.Time
 	if newTargetDate != "" {
-		ntDateTime = TimeTranslate(newTargetDate)
+		ntDateTime = timeTranslate(newTargetDate)
 		if ntDateTime.IsZero() {
 			logText := "Пользователь допустил ошибку при вводе времени дедлайна во время изменения задачи - " + title
 			logs.NewLog(logs.Counter, logText)
@@ -103,7 +103,7 @@ func HandleChange(text []string) {
 
 	var ncDateTime time.Time
 	if newCreationDate != "" {
-		ncDateTime = TimeTranslate(newCreationDate)
+		ncDateTime = timeTranslate(newCreationDate)
 		if ncDateTime.IsZero() {
 			logText := "Пользователь допустил ошибку при вводе времени создания во время изменения задачи - " + title
 			logs.NewLog(logs.Counter, logText)
@@ -114,7 +114,7 @@ func HandleChange(text []string) {
 
 	var ndDateTime time.Time
 	if newDoneDate != "" {
-		ndDateTime = TimeTranslate(newDoneDate)
+		ndDateTime = timeTranslate(newDoneDate)
 		if ndDateTime.IsZero() {
 			logText := "Пользователь допустил ошибку при вводе времени выполнения во время изменения задачи - " + title
 			logs.NewLog(logs.Counter, logText)

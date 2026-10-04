@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -102,6 +103,17 @@ func EditTask(newTask Task, title string) {
 		v := &Pool[i]
 		if strings.ToLower(v.title) == strings.ToLower(title) {
 			existFlag = true
+
+			creation := pickDate(newTask.creationDate, v.creationDate)
+			target := pickDate(newTask.targetDate, v.targetDate)
+			done := pickDate(newTask.doneDate, v.doneDate)
+
+			if err := validateDates(creation, target, done); err != nil {
+				fmt.Println("Задача не изменена:", err)
+				logs.NewLog(logs.Counter, "Пользователь ввел некорректные даты при изменении задачи - "+title+": "+err.Error())
+				return
+			}
+
 			if newTask.title != "" {
 				changes += "Название: " + v.title + " --> " + newTask.title + "\n"
 				logText += "Название: " + v.title + " --> " + newTask.title + "\n"
@@ -131,48 +143,33 @@ func EditTask(newTask Task, title string) {
 				changesExist = true
 			}
 			if !newTask.creationDate.IsZero() {
-				if !v.targetDate.IsZero() && newTask.creationDate.After(v.targetDate) {
-					fmt.Println("Время создания не валидно, оно не может быть после дедлайна. Дата создания изменена не будет")
-				} else if !v.doneDate.IsZero() && newTask.creationDate.After(v.doneDate) {
-					fmt.Println("Время создания не валидно, оно не может быть после даты выполнения. Дата создания изменена не будет")
-				} else {
-					changes += "Дата создания: " + v.creationDate.Format("2006.01.02 15:04") + " --> " + newTask.creationDate.Format("2006.01.02 15:04") + "\n"
-					logText += "Дата создания: " + v.creationDate.Format("2006.01.02 15:04") + " --> " + newTask.creationDate.Format("2006.01.02 15:04") + "\n"
-					v.creationDate = newTask.creationDate
-					changesExist = true
-				}
-
+				changes += "Дата создания: " + v.creationDate.Format("2006.01.02 15:04") + " --> " + newTask.creationDate.Format("2006.01.02 15:04") + "\n"
+				logText += "Дата создания: " + v.creationDate.Format("2006.01.02 15:04") + " --> " + newTask.creationDate.Format("2006.01.02 15:04") + "\n"
+				v.creationDate = newTask.creationDate
+				changesExist = true
 			}
 			if !newTask.targetDate.IsZero() {
-				if !v.creationDate.IsZero() && newTask.targetDate.Before(v.creationDate) {
-					fmt.Println("Время дедлайна не валидно, оно не может быть до даты создания. Дата дедлайна изменена не будет")
+				if !v.targetDate.IsZero() {
+					changes += "Дедлайн: " + v.targetDate.Format("2006.01.02 15:04") + " --> " + newTask.targetDate.Format("2006.01.02 15:04") + "\n"
+					logText += "Дедлайн: " + v.targetDate.Format("2006.01.02 15:04") + " --> " + newTask.targetDate.Format("2006.01.02 15:04") + "\n"
 				} else {
-					if !v.targetDate.IsZero() {
-						changes += "Дедлайн: " + v.targetDate.Format("2006.01.02 15:04") + " --> " + newTask.targetDate.Format("2006.01.02 15:04") + "\n"
-						logText += "Дедлайн: " + v.targetDate.Format("2006.01.02 15:04") + " --> " + newTask.targetDate.Format("2006.01.02 15:04") + "\n"
-					} else {
-						changes += "Дедлайн: " + "+++ " + newTask.targetDate.Format("2006.01.02 15:04") + "\n"
-						logText += "Дедлайн: " + "+++ " + newTask.targetDate.Format("2006.01.02 15:04") + "\n"
-					}
-					v.targetDate = newTask.targetDate
-					changesExist = true
+					changes += "Дедлайн: " + "+++ " + newTask.targetDate.Format("2006.01.02 15:04") + "\n"
+					logText += "Дедлайн: " + "+++ " + newTask.targetDate.Format("2006.01.02 15:04") + "\n"
 				}
+				v.targetDate = newTask.targetDate
+				changesExist = true
 			}
 			if !newTask.doneDate.IsZero() {
-				if !v.creationDate.IsZero() && newTask.doneDate.Before(v.creationDate) {
-					fmt.Println("Время выполнения не валидно, оно не может быть до даты создания. Дата выполнения изменена не будет")
+				if !v.doneDate.IsZero() {
+					changes += "Дата выполнения: " + v.doneDate.Format("2006.01.02 15:04") + " --> " + newTask.doneDate.Format("2006.01.02 15:04") + "\n"
+					logText += "Дата выполнения: " + v.doneDate.Format("2006.01.02 15:04") + " --> " + newTask.doneDate.Format("2006.01.02 15:04") + "\n"
 				} else {
-					if !v.doneDate.IsZero() {
-						changes += "Дата выполнения: " + v.doneDate.Format("2006.01.02 15:04") + " --> " + newTask.doneDate.Format("2006.01.02 15:04") + "\n"
-						logText += "Дата выполнения: " + v.doneDate.Format("2006.01.02 15:04") + " --> " + newTask.doneDate.Format("2006.01.02 15:04") + "\n"
-					} else {
-						changes += "Дата выполнения (теперь задача отмечена как выполненная): " + "+++ " + newTask.doneDate.Format("2006.01.02 15:04") + "\n"
-						logText += "Дата выполнения (теперь задача отмечена как выполненная): " + "+++ " + newTask.doneDate.Format("2006.01.02 15:04") + "\n"
-						v.done = true
-					}
-					v.doneDate = newTask.doneDate
-					changesExist = true
+					changes += "Дата выполнения (теперь задача отмечена как выполненная): " + "+++ " + newTask.doneDate.Format("2006.01.02 15:04") + "\n"
+					logText += "Дата выполнения (теперь задача отмечена как выполненная): " + "+++ " + newTask.doneDate.Format("2006.01.02 15:04") + "\n"
+					v.done = true
 				}
+				v.doneDate = newTask.doneDate
+				changesExist = true
 			}
 			changedTaskId = i
 		}
@@ -200,7 +197,24 @@ func EditTask(newTask Task, title string) {
 	logs.NewLog(logs.Counter, logText)
 }
 
-func TimeTranslate(strTime string) time.Time {
+func pickDate(newDate, oldDate time.Time) time.Time {
+	if newDate.IsZero() {
+		return oldDate
+	}
+	return newDate
+}
+
+func validateDates(creation, target, done time.Time) error {
+	if !target.IsZero() && target.Before(creation) {
+		return errors.New("Дедлайн не может быть раньше даты создания")
+	}
+	if !done.IsZero() && done.Before(creation) {
+		return errors.New("Дата выполнения не может быть раньше даты создания")
+	}
+	return nil
+}
+
+func timeTranslate(strTime string) time.Time {
 
 	if strTime == "" {
 		return time.Time{}

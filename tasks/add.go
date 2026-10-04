@@ -60,7 +60,7 @@ func HandleAdd(text []string) {
 	}
 	var tDateTime time.Time
 	if targetDate != "" {
-		tDateTime = TimeTranslate(targetDate)
+		tDateTime = timeTranslate(targetDate)
 		if tDateTime.IsZero() {
 			logText := "Пользователь допустил ошибку при вводе времени дедлайна во время создания новой задачи - " + title
 			logs.NewLog(logs.Counter, logText)
