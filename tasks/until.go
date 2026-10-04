@@ -1,4 +1,4 @@
-package timecalc
+package tasks
 
 import (
 	"strconv"

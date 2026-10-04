@@ -88,7 +88,8 @@ func HandleAdd(text []string) {
 		logs.NewLog(logs.Counter, "Пользователь попытался создать задачу без названия")
 		fmt.Println("Вы не ввели название! Введите help для вывода списка доступных команд")
 		return
-	} else {
-		NewTask(title, options)
 	}
+
+	NewTask(title, options)
+
 }

@@ -36,7 +36,7 @@ func HandleList(text []string) {
 			} else {
 				logText := "Пользователь вывел список задач по категории - " + cat + " Количество задач - " + strconv.Itoa(counter)
 				logs.NewLog(logs.Counter, logText)
-				fmt.Println("Всего задач:", strconv.Itoa(counter))
+				fmt.Println("Всего задач:", counter)
 			}
 
 			fmt.Println("")
@@ -62,7 +62,7 @@ func HandleList(text []string) {
 			fmt.Println("ЗАДАЧ НЕТ")
 			logs.NewLog(logs.Counter, "Пользователь вывел список задач, но задач нету")
 		} else {
-			fmt.Println("Всего задач:", strconv.Itoa(len(Pool)))
+			fmt.Println("Всего задач:", len(Pool))
 			logs.NewLog(logs.Counter, "Пользователь вывел список задач")
 		}
 

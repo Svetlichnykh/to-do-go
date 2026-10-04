@@ -10,8 +10,9 @@ import (
 	"to-do/tasks"
 )
 
-var Text []string
-var Scanner = bufio.NewScanner(os.Stdin)
+var text []string
+
+var scanner = bufio.NewScanner(os.Stdin)
 
 func main() {
 	logs.NewLog(logs.Counter, "Пользователь запустил программу")
@@ -23,50 +24,48 @@ func main() {
 	for {
 		fmt.Print("> ")
 
-		if ok := Scanner.Scan(); !ok {
+		if ok := scanner.Scan(); !ok {
 			logs.NewLog(logs.Counter, "Ошибка ввода. Прекращение работы программы")
 			fmt.Println("Ошибка")
 			return
 		}
 
-		Text = strings.Fields(Scanner.Text())
+		text = strings.Fields(scanner.Text())
 
-		if len(Text) == 0 {
-
+		if len(text) == 0 {
 			logs.NewLog(logs.Counter, "Пользователь ввел пустую строку")
-			cmds.EmtyInput()
+			cmds.EmptyInput()
+			continue
+		}
 
-		} else {
-			cmd := Text[0]
+		cmd := text[0]
 
-			switch cmd {
-			// UTILS
-			case "exit":
-				if exitHandler := cmds.Exit(Text); exitHandler {
-					return
-				}
-			case "help":
-				cmds.Help(Text)
-			case "logs":
-				cmds.ShowLogs(Text)
-			// TASKS
-			case "add":
-				tasks.HandleAdd(Text)
-			case "list":
-				tasks.HandleList(Text)
-			case "del":
-				tasks.HandleDel(Text)
-			case "done":
-				tasks.HandleDone(Text)
-			case "undone":
-				tasks.HandleUndone(Text)
-			case "change":
-				tasks.HandleChange(Text)
-			// WRONG
-			default:
-				cmds.WrongInput(Text)
+		switch cmd {
+		// UTILS
+		case "exit":
+			if cmds.Exit(text) {
+				return
 			}
-
+		case "help":
+			cmds.Help(text)
+		case "logs":
+			cmds.ShowLogs(text)
+		// TASKS
+		case "add":
+			tasks.HandleAdd(text)
+		case "list":
+			tasks.HandleList(text)
+		case "del":
+			tasks.HandleDel(text)
+		case "done":
+			tasks.HandleDone(text)
+		case "undone":
+			tasks.HandleUndone(text)
+		case "change":
+			tasks.HandleChange(text)
+		// WRONG
+		default:
+			cmds.WrongInput(text)
 		}
 
 		logs.CounterInc()

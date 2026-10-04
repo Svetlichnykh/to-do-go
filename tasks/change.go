@@ -123,9 +123,9 @@ func HandleChange(text []string) {
 		}
 	}
 
-	if newTitle != "" {
+	if !(strings.TrimSpace(strings.ToLower(newTitle)) == strings.TrimSpace(strings.ToLower(title)) && newTitle != title) {
 		for _, v := range Pool {
-			if strings.TrimSpace(strings.ToLower(newTitle)) == strings.TrimSpace(strings.ToLower(v.title)) {
+			if strings.TrimSpace(strings.ToLower(newTitle)) == strings.ToLower(v.title) {
 				logs.NewLog(logs.Counter, "Пользователь попытался изменить задачу, но новое название совпало с уже имеющимся")
 				fmt.Println("Новое название совпадает с уже существующей задачей!")
 				return
@@ -147,28 +147,7 @@ func HandleChange(text []string) {
 		logs.NewLog(logs.Counter, "Пользователь попытался изменить задачу, но не ввел ее название")
 		fmt.Println("Вы не ввели название! Введите help для вывода списка доступных команд")
 		return
-	} else {
-		EditTask(newOptions, strings.TrimSpace(title))
-	}
-}
-
-func TimeTranslate(strTime string) time.Time {
-
-	if strTime == "" {
-		return time.Time{}
 	}
 
-	if errTime != nil {
-		logs.NewLog(0, "Ошибка с загрузкой данных")
-		fmt.Println("Ошибка загрузки локации:", errTime)
-		return time.Time{}
-	}
-
-	typeTime, err := time.ParseInLocation("2006.01.02 15:04", strings.TrimSpace(strTime), loc)
-
-	if err != nil {
-		return time.Time{}
-	}
-
-	return typeTime
+	EditTask(newOptions, strings.TrimSpace(title))
 }

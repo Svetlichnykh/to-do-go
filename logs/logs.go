@@ -3,6 +3,11 @@ package logs
 import "strconv"
 
 var Logs []string
+var Counter int = 1
+
+func CounterInc() {
+	Counter++
+}
 
 func NewLog(counter int, text string) {
 	if counter != 0 {

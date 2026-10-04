@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 	"to-do/logs"
-	"to-do/timecalc"
 )
 
 type Task struct {
@@ -25,7 +24,7 @@ type Options struct {
 	TargetDate  time.Time
 }
 
-var Pool = make([]Task, 0)
+var Pool []Task
 
 func NewTask(title string, options Options) {
 	newTask := Task{
@@ -84,7 +83,7 @@ func PrintTask(i int, v Task) {
 	if !v.targetDate.IsZero() {
 		fmt.Print("❗ Дедлайн: ", v.targetDate.Format("2006.01.02 15:04"))
 		if !v.done {
-			fmt.Print(" ( " + timecalc.TimeUntil(v.targetDate) + " )")
+			fmt.Print(" ( " + TimeUntil(v.targetDate) + " )")
 		}
 		fmt.Println("")
 	}
@@ -199,4 +198,25 @@ func EditTask(newTask Task, title string) {
 	}
 
 	logs.NewLog(logs.Counter, logText)
+}
+
+func TimeTranslate(strTime string) time.Time {
+
+	if strTime == "" {
+		return time.Time{}
+	}
+
+	if errTime != nil {
+		logs.NewLog(0, "Ошибка с загрузкой данных")
+		fmt.Println("Ошибка загрузки локации:", errTime)
+		return time.Time{}
+	}
+
+	typeTime, err := time.ParseInLocation("2006.01.02 15:04", strings.TrimSpace(strTime), loc)
+
+	if err != nil {
+		return time.Time{}
+	}
+
+	return typeTime
 }

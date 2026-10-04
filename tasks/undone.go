@@ -27,7 +27,7 @@ func HandleUndone(text []string) {
 		v := &Pool[i]
 		if strings.ToLower(v.title) == strings.ToLower(title) {
 			existFlag = true
-			if v.done == false {
+			if !v.done {
 				fmt.Println("Данная задача уже отмечена как невыполненная - " + title)
 				logText = "Пользователь попытался отметить невыполненную задачу невыполненной - " + title
 				logs.NewLog(logs.Counter, logText)
