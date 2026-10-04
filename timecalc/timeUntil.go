@@ -1,4 +1,4 @@
-package timeCalc
+package timecalc
 
 import (
 	"strconv"

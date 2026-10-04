@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 	"to-do/logs"
-	"to-do/timeCalc"
+	"to-do/timecalc"
 )
 
 type Task struct {
@@ -84,7 +84,7 @@ func PrintTask(i int, v Task) {
 	if !v.targetDate.IsZero() {
 		fmt.Print("❗ Дедлайн: ", v.targetDate.Format("2006.01.02 15:04"))
 		if !v.done {
-			fmt.Print(" ( " + timeCalc.TimeUntil(v.targetDate) + " )")
+			fmt.Print(" ( " + timecalc.TimeUntil(v.targetDate) + " )")
 		}
 		fmt.Println("")
 	}
@@ -172,12 +172,18 @@ func EditTask(newTask Task, title string) {
 						v.done = true
 					}
 					v.doneDate = newTask.doneDate
-					v.done = true
 					changesExist = true
 				}
 			}
 			changedTaskId = i
 		}
+	}
+
+	if !existFlag {
+		fmt.Println("Не найдено задачи с названием", title)
+		logText = "Пользователь попытался изменить несуществующую задачу - " + title
+		logs.NewLog(logs.Counter, logText)
+		return
 	}
 
 	if !changesExist {
@@ -192,11 +198,5 @@ func EditTask(newTask Task, title string) {
 		PrintTask(-1, Pool[changedTaskId])
 	}
 
-	if !existFlag {
-		fmt.Println("Не найдено задачи с названием", title)
-		logText = "Пользователь попытался изменить несуществующую задачу - " + title
-		logs.NewLog(logs.Counter, logText)
-		return
-	}
 	logs.NewLog(logs.Counter, logText)
 }

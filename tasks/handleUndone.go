@@ -15,6 +15,11 @@ func HandleUndone(text []string) {
 		}
 	}
 	title = strings.TrimSpace(title)
+	if title == "" {
+		fmt.Println("Вы не ввели название задачи")
+		logs.NewLog(logs.Counter, "Пользователь попытался отметить задачу не выполненной, но не ввел названия")
+		return
+	}
 	var logText string
 	existFlag := false
 

@@ -1,4 +1,4 @@
-package Ucmds
+package cmds
 
 import (
 	"fmt"

@@ -1,15 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strings"
-	"to-do/Ucmds"
-	"to-do/input"
+	"to-do/cmds"
 	"to-do/logs"
 	"to-do/tasks"
 )
 
 var Text []string
+var Scanner = bufio.NewScanner(os.Stdin)
 
 func main() {
 	logs.NewLog(logs.Counter, "Пользователь запустил программу")
@@ -21,18 +23,18 @@ func main() {
 	for {
 		fmt.Print("> ")
 
-		if ok := input.Scanner.Scan(); !ok {
+		if ok := Scanner.Scan(); !ok {
 			logs.NewLog(logs.Counter, "Ошибка ввода. Прекращение работы программы")
 			fmt.Println("Ошибка")
 			return
 		}
 
-		Text = strings.Fields(input.Scanner.Text())
+		Text = strings.Fields(Scanner.Text())
 
 		if len(Text) == 0 {
 
 			logs.NewLog(logs.Counter, "Пользователь ввел пустую строку")
-			Ucmds.EmtyInput()
+			cmds.EmtyInput()
 
 		} else {
 			cmd := Text[0]
@@ -40,13 +42,13 @@ func main() {
 			switch cmd {
 			// UTILS
 			case "exit":
-				if exitHandler := Ucmds.Exit(Text); exitHandler {
+				if exitHandler := cmds.Exit(Text); exitHandler {
 					return
 				}
 			case "help":
-				Ucmds.Help(Text)
+				cmds.Help(Text)
 			case "logs":
-				Ucmds.ShowLogs(Text)
+				cmds.ShowLogs(Text)
 			// TASKS
 			case "add":
 				tasks.HandleAdd(Text)
@@ -62,7 +64,7 @@ func main() {
 				tasks.HandleChange(Text)
 			// WRONG
 			default:
-				Ucmds.WrongInput(Text)
+				cmds.WrongInput(Text)
 			}
 
 		}

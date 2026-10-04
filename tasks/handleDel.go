@@ -15,6 +15,11 @@ func HandleDel(text []string) {
 		}
 	}
 	title = strings.TrimSpace(title)
+	if title == "" {
+		fmt.Println("Вы не ввели название задачи")
+		logs.NewLog(logs.Counter, "Пользователь попытался удалить задачу, но не ввел названия")
+		return
+	}
 	var logText string
 	existFlag := false
 
@@ -23,6 +28,7 @@ func HandleDel(text []string) {
 			existFlag = true
 			Pool = slices.Delete(Pool, i, i+1)
 			logText = "Пользователь удалил задачу - " + title
+			break
 		}
 	}
 	if !existFlag {

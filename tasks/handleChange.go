@@ -8,6 +8,8 @@ import (
 	"to-do/logs"
 )
 
+var loc, errTime = time.LoadLocation("Europe/Moscow")
+
 func HandleChange(text []string) {
 
 	var title string
@@ -58,7 +60,7 @@ func HandleChange(text []string) {
 				}
 			case "-ndd":
 				if newDoneDate != "" {
-					errInput = errors.Join(errInput, errors.New("флаг -ndt был введен более 1 раза"))
+					errInput = errors.Join(errInput, errors.New("флаг -ndd был введен более 1 раза"))
 				} else {
 					flag = "newDoneDate"
 				}
@@ -123,7 +125,7 @@ func HandleChange(text []string) {
 
 	if newTitle != "" {
 		for _, v := range Pool {
-			if strings.TrimSpace(newTitle) == v.title {
+			if strings.TrimSpace(strings.ToLower(newTitle)) == strings.TrimSpace(strings.ToLower(v.title)) {
 				logs.NewLog(logs.Counter, "Пользователь попытался изменить задачу, но новое название совпало с уже имеющимся")
 				fmt.Println("Новое название совпадает с уже существующей задачей!")
 				return
@@ -141,14 +143,6 @@ func HandleChange(text []string) {
 		doneDate:     ndDateTime,
 	}
 
-	for _, v := range Pool {
-		if strings.ToLower(v.title) == strings.ToLower(newTitle) {
-			logs.NewLog(logs.Counter, "Пользователь попытался изменить название задачи на уже существующее")
-			fmt.Println("Задача с таким названием уже существует! Введите другое новое имя")
-			return
-		}
-	}
-
 	if title == "" {
 		logs.NewLog(logs.Counter, "Пользователь попытался изменить задачу, но не ввел ее название")
 		fmt.Println("Вы не ввели название! Введите help для вывода списка доступных команд")
@@ -164,10 +158,9 @@ func TimeTranslate(strTime string) time.Time {
 		return time.Time{}
 	}
 
-	loc, err := time.LoadLocation("Europe/Moscow")
-	if err != nil {
+	if errTime != nil {
 		logs.NewLog(0, "Ошибка с загрузкой данных")
-		fmt.Println("Ошибка загрузки локации:", err)
+		fmt.Println("Ошибка загрузки локации:", errTime)
 		return time.Time{}
 	}
 
