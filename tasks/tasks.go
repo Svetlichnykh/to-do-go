@@ -234,3 +234,16 @@ func timeTranslate(strTime string) time.Time {
 
 	return typeTime
 }
+
+func findTask(title string) (int, error) {
+	title = strings.TrimSpace(title)
+
+	for i, v := range Pool {
+		if strings.EqualFold(title, v.title) {
+			return i, nil
+		}
+	}
+
+	return -1, fmt.Errorf()
+
+}
