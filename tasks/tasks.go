@@ -237,6 +237,9 @@ func timeTranslate(strTime string) time.Time {
 
 func findTask(title string) (int, error) {
 	title = strings.TrimSpace(title)
+	if title == "" {
+		return -1, fmt.Errorf("введено пустое значение вместо имени задачи")
+	}
 
 	for i, v := range Pool {
 		if strings.EqualFold(title, v.title) {
@@ -244,6 +247,18 @@ func findTask(title string) (int, error) {
 		}
 	}
 
-	return -1, fmt.Errorf()
+	return -1, fmt.Errorf("задача %q не найдена", title)
 
+}
+
+func titleFrom(text []string) string {
+	var title strings.Builder
+
+	for i := range text {
+		if i > 0 {
+			title.WriteString(text[i] + " ")
+		}
+	}
+
+	return title.String()
 }

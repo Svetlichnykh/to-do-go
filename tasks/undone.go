@@ -2,50 +2,32 @@ package tasks
 
 import (
 	"fmt"
-	"strings"
 	"time"
 	"to-do/logs"
 )
 
 func HandleUndone(text []string) {
-	var title string
-	for i := range text {
-		if i > 0 {
-			title += text[i] + " "
-		}
-	}
-	title = strings.TrimSpace(title)
-	if title == "" {
-		fmt.Println("Вы не ввели название задачи")
-		logs.NewLog(logs.Counter, "Пользователь попытался отметить задачу не выполненной, но не ввел названия")
+	title := titleFrom(text)
+
+	i, err := findTask(title)
+
+	if err != nil {
+		fmt.Println(err)
+		logs.NewLog(logs.Counter, "Пользователь попытался отметить задачу как невыполненную, но получил ошибку:")
+		logs.NewLog(0, err.Error())
 		return
 	}
-	var logText string
-	existFlag := false
 
-	for i := range Pool {
-		v := &Pool[i]
-		if strings.ToLower(v.title) == strings.ToLower(title) {
-			existFlag = true
-			if !v.done {
-				fmt.Println("Данная задача уже отмечена как невыполненная - " + title)
-				logText = "Пользователь попытался отметить невыполненную задачу невыполненной - " + title
-				logs.NewLog(logs.Counter, logText)
-				return
-			}
-			v.doneDate = time.Time{}
-			v.done = false
-			logText = "Пользователь отметил следующую задачу как невыполненную - " + title
-		}
-	}
-
-	if !existFlag {
-		fmt.Println("Не найдено задачи с названием", title)
-		logText = "Пользователь попытался отметить несуществующую задачу как невыполненную - " + title
+	if !Pool[i].done {
+		fmt.Println("Данная задача уже отмечена как невыполненная - " + title)
+		logText := "Пользователь попытался отметить невыполненную задачу невыполненной - " + title
 		logs.NewLog(logs.Counter, logText)
 		return
 	}
 
-	logs.NewLog(logs.Counter, logText)
+	Pool[i].doneDate = time.Time{}
+	Pool[i].done = false
 	fmt.Println("Задача отмечена как не выполненная - " + title)
+	logText := "Пользователь отметил следующую задачу как невыполненную - " + title
+	logs.NewLog(logs.Counter, logText)
 }

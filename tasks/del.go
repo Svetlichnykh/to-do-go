@@ -3,40 +3,22 @@ package tasks
 import (
 	"fmt"
 	"slices"
-	"strings"
 	"to-do/logs"
 )
 
 func HandleDel(text []string) {
-	var title string
-	for i := range text {
-		if i > 0 {
-			title += text[i] + " "
-		}
-	}
-	title = strings.TrimSpace(title)
-	if title == "" {
-		fmt.Println("Вы не ввели название задачи")
-		logs.NewLog(logs.Counter, "Пользователь попытался удалить задачу, но не ввел названия")
-		return
-	}
-	var logText string
-	existFlag := false
+	title := titleFrom(text)
 
-	for i, v := range Pool {
-		if strings.ToLower(v.title) == strings.ToLower(title) {
-			existFlag = true
-			Pool = slices.Delete(Pool, i, i+1)
-			logText = "Пользователь удалил задачу - " + title
-			break
-		}
-	}
-	if !existFlag {
-		fmt.Println("Не найдено задачи с названием", title)
-		logText = "Пользователь попытался удалить несуществующую задачу - " + title
-		logs.NewLog(logs.Counter, logText)
+	i, err := findTask(title)
+
+	if err != nil {
+		fmt.Println(err)
+		logs.NewLog(logs.Counter, "Пользователь попылатался удалить задачу, но получил ошибку:")
+		logs.NewLog(0, err.Error())
 		return
 	}
-	logs.NewLog(logs.Counter, logText)
+
+	Pool = slices.Delete(Pool, i, i+1)
 	fmt.Println("Задача удалена - " + title)
+
 }
